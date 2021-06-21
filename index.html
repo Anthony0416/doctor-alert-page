@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>详情</title>
+  <title>口腔健康提醒</title>
   <!-- import CSS -->
   <link rel="stylesheet" href="./index4.css">
   <style>
@@ -64,13 +64,116 @@
     [v-cloak] {
       display: none
     }
-
+    
+    .doctor .bottom {
+      border-top: 1px solid #DEE2ED;
+      padding: 0.7rem 0.35rem 0.3rem;
+      box-sizing: border-box;
+      font-size: 0;
+    }
+    .doctor .bottom .jindu {
+      width: 100%;
+    }
+    .doctor .bottom .jindu span {
+      display: inline-block;
+      width: calc(20% - 2px);
+      height: 15px;
+      margin: 0 1px;
+      box-sizing: border-box;
+      vertical-align: top;
+      text-align: center;
+    }
+    .doctor .bottom .jindu span i {
+      display: inline-block;
+      width: 0.4rem;
+      height: 0.5rem;
+      border-top: 0.25rem solid rgba(0,0,0,0);
+      border-left: 0.2rem solid rgba(0,0,0,0);
+      border-right: 0.2rem solid rgba(0,0,0,0);
+      border-bottom: 0.25rem solid;
+      box-sizing: border-box;
+    }
+    .doctor .bottom .jindu span p {
+      font-size: 0.32rem;
+    }
+    .doctor .bottom .time {
+      text-align: center;
+      font-size: 0.32rem;
+      color: #5A5C6D;
+      margin-top: 1rem;
+    }
+    .healthSuggest {padding: 0.43rem; box-sizing: border-box; margin-top: 0.27rem;}
+    .healthSuggest .imgTitle {
+      width: 1.78rem;
+    }
+    .healthSuggest #suggestion {padding: 0.32rem 0.44rem; box-sizing: border-box; background-color: #EBF7F4; border-radius: 0.21rem; margin-top: 0.3rem;}
+    .healthSuggest .qrcode {width: 2.67rem; height: 2.67rem; margin: 0.39rem auto; border: 1px solid #2E353E; border-radius: 0.21rem; padding: 0.11rem; box-sizing: border-box;}
+    .healthSuggest .qrcodeTip { font-size: 0.32rem; color: #8885A2; text-align: center;}
+    
+    .none {
+      display: none !important;
+    }
+    .hidden {
+      opacity: 0 !important;
+    }
   </style>
 </head>
 <body>
   <div class="box" id="app" v-cloak>
+    <div class="t_box doctor">
+      <div class="top">
+        <img class="headImage" src="">
+        <div class="right">
+          <p>--医生提醒您</p>
+          <span></span>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="jindu">
+          <span style="background-color: #64E1BF; border-radius: 7px 0 0 7px;"></span>
+          <span style="background-color: #35D1A7;"></span>
+          <span style="background-color: #FFC58C;"></span>
+          <span style="background-color: #FF9547;"></span>
+          <span style="background-color: #F77272; border-radius: 0 7px 7px 0;"></span>
+        </div>
+        <div class="jindu">
+          <span class="one">
+            <i style="border-bottom-color: #64E1BF;"></i>
+            <p>1级</p>
+          </span>
+          <span class="two hidden">
+            <i style="border-bottom-color: #35D1A7;"></i>
+            <p>2级</p>
+          </span>
+          <span class="three hidden">
+            <i style="border-bottom-color: #FFC58C;"></i>
+            <p>3级</p>
+          </span>
+          <span class="four hidden">
+            <i style="border-bottom-color: #FF9547;"></i>
+            <p>4级</p>
+          </span>
+          <span class="five hidden">
+            <i style="border-bottom-color: #F77272;"></i>
+            <p>5级</p>
+          </span>
+        </div>
+        <p class="time">危险菌斑累计时长：</p>
+      </div>
+    </div>
+    <div class="t_box healthSuggest">
+      <img class="imgTitle" src="./img/jiankangjianyi.png">
+      <div id="suggestion"></div>
+      <div class="qrcode">
+        <img src="">
+      </div>
+      <p class="qrcodeTip">如有疑问请咨询您的专属牙医</p>
+    </div>
+    
     <div class="t_box">
-      <div class="title">
+      <p>刷牙时间</p>
+      <h2>危险菌斑累计时长（7天内）：</h2>
+      <!-- <div class="title">
         菌斑等级
         <span>{{ level }}级</span>
       </div>
@@ -98,7 +201,7 @@
             <p>龈沟清洁指数</p>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="m_title">
       牙面清洁详情<span>（牙齿相邻面请用牙线清洁）</span>
@@ -152,13 +255,13 @@
             this.progressW = document.body.clientWidth*50/375>73.3?73.3:document.body.clientWidth*50/375
           })()
         }
-        this.getDoctorInfo()
         this.getData()
+        this.init()
       },
       methods: {
         getData() {
           var _this = this
-          $.post('https://os.32teeth.cn/api/record/webBrushingRecordDetails?recordId='+this.recordId,function(d){
+          $.post('//os.32teeth.cn/api/record/webBrushingRecordDetails?recordId='+this.recordId,function(d){
             if(typeof d == 'string'){
               d =JSON.parse(d)
             }
@@ -193,19 +296,20 @@
             }
           })
         },
-        getDoctorInfo() {
-          var _this = this
-          $.post('https://dos.32teeth.cn/account/selfOralRisk/ getDynamicPLI?recordId='+this.recordId, function(d) {
+        init () {
+          $.post('//dos.32teeth.cn/account/selfOralRisk/getDynamicPLI?recordId='+this.recordId,function(d){
             if(typeof d == 'string'){
               d =JSON.parse(d)
             }
-            console.log(d)
-            if (d.code === 'success') {
-              let data = d.data
+            if(d.code == 'success'){
             }
           })
+          
+          $.get('https://os.32teeth.cn/api/testjsonp/callback?callback=callback', function(e) {
+            console.log(e)
+          })
         },
-        countGrade(count) {
+        countGrade (count){
           var res = 100
           if (count>60) res =101
           if (count<40){
