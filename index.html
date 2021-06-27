@@ -64,7 +64,11 @@
     [v-cloak] {
       display: none
     }
-    
+    .doctor .top {padding: 14px 21px; box-sizing: border-box;}
+    .doctor .top img {width: 56px; border-radius: 50%; display: inline-block;}
+    .doctor .top .right {margin-left: 10px; width: calc(100% - 70px); display: inline-block; vertical-align: top;}
+    .doctor .top .right p {color: #5A5C6D; font-size: 16px; font-weight: 500; padding: 13px 0 5px;}
+    .doctor .top .right span {color:#8885A2; font-size: 12px;}
     .doctor .bottom {
       border-top: 1px solid #DEE2ED;
       padding: 0.7rem 0.35rem 0.3rem;
@@ -106,12 +110,23 @@
     .healthSuggest .imgTitle {
       width: 1.78rem;
     }
-    .healthSuggest #suggestion {padding: 0.32rem 0.44rem; box-sizing: border-box; background-color: #EBF7F4; border-radius: 0.21rem; margin-top: 0.3rem;}
+    .healthSuggest #suggestion {padding: 0.32rem 0.44rem; box-sizing: border-box; background-color: #EBF7F4; border-radius: 0.21rem; margin-top: 0.3rem; color: #5A5C6D; font-size: 14px;}
     .healthSuggest .qrcode {width: 2.67rem; height: 2.67rem; margin: 0.39rem auto; border: 1px solid #2E353E; border-radius: 0.21rem; padding: 0.11rem; box-sizing: border-box;}
     .healthSuggest .qrcodeTip { font-size: 0.32rem; color: #8885A2; text-align: center;}
     
+    .dashboard {padding: 10px;margin-top: 10px; color: #8885A2;}
+    .dashboard .flex {display: flex; justify-content: space-between; align-items: center;}
+    .dashboard .top {padding: 5px 10px;}
+    .dashboard .top .icon {width: 45px; height: 20px; line-height: 20px; border-radius: 10px;text-align: center; background-color: #FDA8A7; color: #fff;}
+    .dashboard .dash div {display: inline-block; width: 40%; vertical-align: top;}
+    .dashboard .dash>span {display: inline-block; width: 1px; height: 30px; background-color: #eee;}
+    .dashboard h2 i {font-style: normal; width: 14px; height: 14px; border: 1px solid #8885A2;display: inline-block; border-radius: 50%; line-height: 14px; text-align: center;}
+    
     .none {
       display: none !important;
+    }
+    .center {
+      text-align: center;
     }
     .hidden {
       opacity: 0 !important;
@@ -122,10 +137,10 @@
   <div class="box" id="app" v-cloak>
     <div class="t_box doctor">
       <div class="top">
-        <img class="headImage" src="">
+        <img class="headImage" :src="headPic">
         <div class="right">
-          <p>--医生提醒您</p>
-          <span></span>
+          <p>{{truename}}医生提醒您</p>
+          <span>您{{getMonthDay}}口腔菌斑风险等级曾达3及以上</span>
         </div>
       </div>
       <div class="bottom">
@@ -137,23 +152,23 @@
           <span style="background-color: #F77272; border-radius: 0 7px 7px 0;"></span>
         </div>
         <div class="jindu">
-          <span class="one">
+          <span class="one" :class="pliLevel === 1 ? '' : 'hidden'">
             <i style="border-bottom-color: #64E1BF;"></i>
             <p>1级</p>
           </span>
-          <span class="two hidden">
+          <span class="two" :class="pliLevel === 2 ? '' : 'hidden'">
             <i style="border-bottom-color: #35D1A7;"></i>
             <p>2级</p>
           </span>
-          <span class="three hidden">
+          <span class="three" :class="pliLevel === 3 ? '' : 'hidden'">
             <i style="border-bottom-color: #FFC58C;"></i>
             <p>3级</p>
           </span>
-          <span class="four hidden">
+          <span class="four" :class="pliLevel === 4 ? '' : 'hidden'">
             <i style="border-bottom-color: #FF9547;"></i>
             <p>4级</p>
           </span>
-          <span class="five hidden">
+          <span class="five" :class="pliLevel === 5 ? '' : 'hidden'">
             <i style="border-bottom-color: #F77272;"></i>
             <p>5级</p>
           </span>
@@ -163,45 +178,37 @@
     </div>
     <div class="t_box healthSuggest">
       <img class="imgTitle" src="./img/jiankangjianyi.png">
-      <div id="suggestion"></div>
+      <div id="suggestion">您可能还没有感觉到危险菌斑对您的损害，有效清除菌斑，保障口腔健康，请认真有效刷牙并使用牙线。</div>
       <div class="qrcode">
-        <img src="">
+        <img :src="advisoryQrcode" width="100%">
       </div>
       <p class="qrcodeTip">如有疑问请咨询您的专属牙医</p>
     </div>
     
-    <div class="t_box">
-      <p>刷牙时间</p>
-      <h2>危险菌斑累计时长（7天内）：</h2>
-      <!-- <div class="title">
-        菌斑等级
-        <span>{{ level }}级</span>
+    <div class="t_box dashboard">
+      <p class="flex top">
+        <span class="icon">AR</span>
+        <span>更多报告></span>
+      </p>
+      <p class="center">刷牙时间 {{brushTeethTime}}</p>
+      <h2 class="center">危险菌斑累计时长（7天内）：{{dangerPlaqueVo.dangerPlaqueTime}}
+        <i>?</i>
+      </h2>
+      <div class="dash center">
+        <div class="left">
+          <p>{{yy}}</p>
+          <span>龈沟清洁</span></div>
+        <span></span>
+        <div class="right">
+          <p>{{qj}}</p>
+          <span>牙面清洁</span>
+        </div>
       </div>
-      <div class="m_box">
-        <div class="m">
-          <div class="yamian_box" :style="{left:qj+'%'}">
-            <h2>
-              {{ qj }}
-              <img :src="'./img/t'+qjS+'.png'">
-            </h2>
-            <p>牙面清洁指数</p>
-            <img class="r180" :src="'./img/j'+qjS+'.png'">
-          </div>
-        </div>
-        <div class="line_box">
-            <img src="./img/line.png">
-        </div>
-        <div class="m">
-          <div class="yamian_box" :style="{left:yy+'%',top:0}">
-            <img :src="'./img/j'+yyS+'.png'">
-            <h2>
-              {{ yy }}
-              <img :src="'./img/t'+yyS+'.png'">
-            </h2>
-            <p>龈沟清洁指数</p>
-          </div>
-        </div>
-      </div> -->
+      <p class="flex">
+        <span>刷牙总时长：</span>
+        <span>有效时长：</span>
+        <span>连续刷牙天</span>
+      </p>
     </div>
     <div class="m_title">
       牙面清洁详情<span>（牙齿相邻面请用牙线清洁）</span>
@@ -243,7 +250,16 @@
           wai: [100,100,100,100,100,100],
           nei: [100,100,100,100,100,100],
           progressW: 50,
-          yStyle: {width: 50+'px',height: 50+'px'}
+          yStyle: {width: 50+'px',height: 50+'px'},
+          advisoryQrcode: "http://qnimage.32teeth.cn/174225CP29ND2.png",
+          brushTeethTime: "2019-06-17 09:42:57",
+          headPic: "http://qnimage.32teeth.cn/142059O9XMGNN.jpg",
+          pliLevel: 5,
+          truename: "32teeth",
+          dangerPlaqueVo: {
+            dangerPlaqueTime: '',
+            dangerPlaquePicUrl: ''
+          }
         }
       },
       created() {
@@ -255,8 +271,14 @@
             this.progressW = document.body.clientWidth*50/375>73.3?73.3:document.body.clientWidth*50/375
           })()
         }
-        this.getData()
         this.init()
+        this.getData()
+      },
+      computed: {
+        getMonthDay () {
+          let date = new Date(this.brushTeethTime)
+          return `${date.getMonth() + 1}月${date.getDate()}日`
+        }
       },
       methods: {
         getData() {
@@ -271,6 +293,7 @@
               _this.yy = d.data.gingivalSulcusScore
               _this.yyS = _this.makeTopStep(d.data.gingivalSulcusScoreInfo)
               _this.level = d.data.plaqueLevel
+              _this.dangerPlaqueVo = d.data.dangerPlaqueVo
               _this.yao = [
                 _this.countGrade(d.data.toothSurfaceVos[2].toothSurfaceDetailsVos[0].brushCount),
                 _this.countGrade(d.data.toothSurfaceVos[2].toothSurfaceDetailsVos[2].brushCount),
@@ -297,15 +320,20 @@
           })
         },
         init () {
+          const _this = this
           $.post('//dos.32teeth.cn/account/selfOralRisk/getDynamicPLI?recordId='+this.recordId,function(d){
             if(typeof d == 'string'){
               d =JSON.parse(d)
             }
             if(d.code == 'success'){
+              _this.advisoryQrcode = d.data.advisoryQrcode
+              _this.brushTeethTime = d.data.brushTeethTime
+              _this.headPic = d.data.headPic
+              _this.pliLevel = Number(d.data.pliLevel)
+              _this.truename = d.data.truename
             }
           })
-          
-          $.get('https://os.32teeth.cn/api/testjsonp/callback?callback=callback', function(e) {
+          $.get('https://os.32teeth.cn/api/record/moreCountRecordAllDetailsHomePLI?recordId='+this.recordId, function(e) {
             console.log(e)
           })
         },
