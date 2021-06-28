@@ -105,6 +105,7 @@
       font-size: 0.32rem;
       color: #5A5C6D;
       margin-top: 1rem;
+      padding-bottom: 10px;
     }
     .healthSuggest {padding: 0.43rem; box-sizing: border-box; margin-top: 0.27rem;}
     .healthSuggest .imgTitle {
@@ -114,14 +115,31 @@
     .healthSuggest .qrcode {width: 2.67rem; height: 2.67rem; margin: 0.39rem auto; border: 1px solid #2E353E; border-radius: 0.21rem; padding: 0.11rem; box-sizing: border-box;}
     .healthSuggest .qrcodeTip { font-size: 0.32rem; color: #8885A2; text-align: center;}
     
-    .dashboard {padding: 10px;margin-top: 10px; color: #8885A2;}
+    .dashboard {padding: 10px 10px 20px;margin-top: 10px; color: #8885A2;}
     .dashboard .flex {display: flex; justify-content: space-between; align-items: center;}
-    .dashboard .top {padding: 5px 10px;}
+    .dashboard .top {padding: 5px 10px 10px;}
     .dashboard .top .icon {width: 45px; height: 20px; line-height: 20px; border-radius: 10px;text-align: center; background-color: #FDA8A7; color: #fff;}
     .dashboard .dash div {display: inline-block; width: 40%; vertical-align: top;}
-    .dashboard .dash>span {display: inline-block; width: 1px; height: 30px; background-color: #eee;}
+    .dashboard .dash>span {display: inline-block; width: 1px; height: 50px; background-color: #eee;}
+    .dashboard h2 {color: #7C7E8C;font-size: 14px;padding: 10px 0;}
     .dashboard h2 i {font-style: normal; width: 14px; height: 14px; border: 1px solid #8885A2;display: inline-block; border-radius: 50%; line-height: 14px; text-align: center;}
+    .dashboard .dash {padding: 15px 0 20px;}
+    .dashboard .dash p {font-size: 40px;font-weight: bold; color: #FFB4B3;}
+    .dashboard .dash span {font-size: 12px;}
     
+    .cover {position: fixed; top: 0; left: 0; height: 100vh; width: 100vw; background: rgba(0,0,0,0.7); z-index: 100;}
+    .cover .alertContent {
+      background: #fff; 
+      width: 80%; 
+      position: absolute; 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%);
+      border-radius: 8px;
+    }
+    .cover .alertContent .text {padding: 20px;font-size: 14px;color: #666; line-height: 1.5;}
+    .cover .alertContent .close {width: 100%; height: 50px;line-height: 50px;text-align: center;font-size: 16px;border-top: 1px solid #ddd;}
+
     .none {
       display: none !important;
     }
@@ -173,7 +191,7 @@
             <p>5级</p>
           </span>
         </div>
-        <p class="time">危险菌斑累计时长：</p>
+        <p class="time" v-if="dangerPlaqueVo.dangerPlaqueTime">{{dangerPlaqueVo.dangerPlaqueTime}}</p>
       </div>
     </div>
     <div class="t_box healthSuggest">
@@ -184,15 +202,14 @@
       </div>
       <p class="qrcodeTip">如有疑问请咨询您的专属牙医</p>
     </div>
-    
     <div class="t_box dashboard">
       <p class="flex top">
         <span class="icon">AR</span>
         <span>更多报告></span>
       </p>
       <p class="center">刷牙时间 {{brushTeethTime}}</p>
-      <h2 class="center">危险菌斑累计时长（7天内）：{{dangerPlaqueVo.dangerPlaqueTime}}
-        <i>?</i>
+      <h2 class="center" v-if="dangerPlaqueVo.dangerPlaqueTime">{{dangerPlaqueVo.dangerPlaqueTime}}
+        <i @click="showCover = true">?</i>
       </h2>
       <div class="dash center">
         <div class="left">
@@ -205,9 +222,9 @@
         </div>
       </div>
       <p class="flex">
-        <span>刷牙总时长：</span>
-        <span>有效时长：</span>
-        <span>连续刷牙天</span>
+        <span>刷牙总时长：{{toothSurfaceBrushVos.brushTeethAllDuration}}</span>
+        <span>有效时长：{{toothSurfaceBrushVos.duration}}</span>
+        <span>连续刷牙{{toothSurfaceBrushVos.continuedDay}}天</span>
       </p>
     </div>
     <div class="m_title">
@@ -228,6 +245,13 @@
     <!-- <div class="b_qr_box">
       <img src="./img/b_qr.png">
     </div> -->
+    <div class="cover" v-if="showCover">
+      <div class="alertContent">
+        <div class="text">牙菌斑对于牙齿的损害是一个缓慢渐进的过程，损伤期间你甚至不能感受或感受被忽略。<br/>
+          危险菌斑累计时长把有害菌斑对于牙齿的损伤时间进行累计，表明在这期间你的免疫系统及牙齿与有害菌斑进行了多次的战斗，提醒你关注牙齿微小的变化（如：牙齿表面的白斑，“上火”等等状况），在损伤突破临界以前进行有效干预，用最低的成本保障口腔健康。</div>
+        <p class="close" @click="showCover = false">关闭</p>
+        </div>
+    </div>
   </div>
 </body>
   <script src="./js/flexible.js"></script>
@@ -239,7 +263,7 @@
       el: '#app',
       data: function() {
         return {
-          recordId: '8a9951366b5490ba016b631e58cf0096',
+          recordId: '8a9951367891c449017891c5b3030005',
           stepColor: ['#d64e1e','#22c7a6','#23d7d7','#ef924d'],
           level: 0,
           qj: 50,
@@ -259,7 +283,14 @@
           dangerPlaqueVo: {
             dangerPlaqueTime: '',
             dangerPlaquePicUrl: ''
-          }
+          },
+          toothSurfaceBrushVos: {
+            duration: '',
+            brushTeethAllDuration: '',
+            uploadType: '',
+            continuedDay: ''
+          },
+          showCover: false
         }
       },
       created() {
@@ -293,7 +324,6 @@
               _this.yy = d.data.gingivalSulcusScore
               _this.yyS = _this.makeTopStep(d.data.gingivalSulcusScoreInfo)
               _this.level = d.data.plaqueLevel
-              _this.dangerPlaqueVo = d.data.dangerPlaqueVo
               _this.yao = [
                 _this.countGrade(d.data.toothSurfaceVos[2].toothSurfaceDetailsVos[0].brushCount),
                 _this.countGrade(d.data.toothSurfaceVos[2].toothSurfaceDetailsVos[2].brushCount),
@@ -333,8 +363,16 @@
               _this.truename = d.data.truename
             }
           })
-          $.get('https://os.32teeth.cn/api/record/moreCountRecordAllDetailsHomePLI?recordId='+this.recordId, function(e) {
-            console.log(e)
+          $.get('https://os.32teeth.cn/api/record/moreCountRecordAllDetailsHomePLI?recordId='+this.recordId, function(d) {
+            if(typeof d == 'string'){
+              d =JSON.parse(d)
+            }
+            if(d.code == 'success'){
+              _this.dangerPlaqueVo = d.data.dangerPlaqueVo
+              if (d.data.toothSurfaceBrushVos.length > 0) {
+                _this.toothSurfaceBrushVos = d.data.toothSurfaceBrushVos[0]
+              }
+            }
           })
         },
         countGrade (count){
