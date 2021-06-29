@@ -99,6 +99,7 @@
     }
     .doctor .bottom .jindu span p {
       font-size: 0.32rem;
+      padding: 5px 0 0;
     }
     .doctor .bottom .time {
       text-align: center;
@@ -118,12 +119,14 @@
     .dashboard {padding: 10px 10px 20px;margin-top: 10px; color: #8885A2;}
     .dashboard .flex {display: flex; justify-content: space-between; align-items: center;}
     .dashboard .top {padding: 5px 10px 10px;}
-    .dashboard .top .icon {width: 45px; height: 20px; line-height: 20px; border-radius: 10px;text-align: center; background-color: #FDA8A7; color: #fff;}
+    .dashboard .top .icon {padding: 0 15px; height: 20px; line-height: 20px; border-radius: 10px;text-align: center; background-color: #FDA8A7; color: #fff;}
     .dashboard .dash div {display: inline-block; width: 40%; vertical-align: top;}
     .dashboard .dash>span {display: inline-block; width: 1px; height: 50px; background-color: #eee;}
     .dashboard h2 {color: #7C7E8C;font-size: 14px;padding: 10px 0;}
     .dashboard h2 i {font-style: normal; width: 14px; height: 14px; border: 1px solid #8885A2;display: inline-block; border-radius: 50%; line-height: 14px; text-align: center;}
     .dashboard .dash {padding: 15px 0 20px;}
+    .dashboard .dash .left, .dashboard .dash .right {position:relative}
+    .dashboard .dash img {width: 25px;position: absolute;top: 0px;right: 15px;}
     .dashboard .dash p {font-size: 40px;font-weight: bold; color: #FFB4B3;}
     .dashboard .dash span {font-size: 12px;}
     
@@ -169,7 +172,7 @@
           <span style="background-color: #FF9547;"></span>
           <span style="background-color: #F77272; border-radius: 0 7px 7px 0;"></span>
         </div>
-        <div class="jindu">
+        <div class="jindu" style="height: 35px;">
           <span class="one" :class="pliLevel === 1 ? '' : 'hidden'">
             <i style="border-bottom-color: #64E1BF;"></i>
             <p>1级</p>
@@ -204,8 +207,8 @@
     </div>
     <div class="t_box dashboard">
       <p class="flex top">
-        <span class="icon">AR</span>
-        <span>更多报告></span>
+        <span class="icon">{{brushWay}}</span>
+        <!-- <span>更多报告></span> -->
       </p>
       <p class="center">刷牙时间 {{brushTeethTime}}</p>
       <h2 class="center" v-if="dangerPlaqueVo.dangerPlaqueTime">{{dangerPlaqueVo.dangerPlaqueTime}}
@@ -213,10 +216,12 @@
       </h2>
       <div class="dash center">
         <div class="left">
+          <img :src="'./img/t' + yyS + '.png'">
           <p>{{yy}}</p>
           <span>龈沟清洁</span></div>
         <span></span>
         <div class="right">
+          <img :src="'./img/t' + qjS + '.png'">
           <p>{{qj}}</p>
           <span>牙面清洁</span>
         </div>
@@ -309,6 +314,19 @@
         getMonthDay () {
           let date = new Date(this.brushTeethTime)
           return `${date.getMonth() + 1}月${date.getDate()}日`
+        },
+        brushWay () {
+          let result = 'AR'
+          if (this.toothSurfaceBrushVos.uploadType === 1) {
+            result = '盲刷'
+          } else if (this.toothSurfaceBrushVos.uploadType === 2) {
+            result = '游戏'
+          } else if (this.toothSurfaceBrushVos.uploadType === 3) {
+            result = 'AR'
+          } else if (this.toothSurfaceBrushVos.uploadType === 4) {
+            result = '刷牙操'
+          }
+          return result
         }
       },
       methods: {
